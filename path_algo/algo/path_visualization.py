@@ -125,8 +125,14 @@ import numpy as np
 # Assuming Direction is defined elsewhere correctly
 
 
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from consts import Direction  # Ensure this is defined somewhere in your code
+import numpy as np
+
+
 def visualize_paths(
-    valid_paths,  # This is now expected to be a list of numpy arrays
+    valid_paths,  # Expecting a list of numpy arrays for path points
     obstacles_info,
     grid_size=20,
     robot_footprint=(3, 3),
@@ -144,17 +150,56 @@ def visualize_paths(
     ax.grid(True, which="both", linestyle="-", color="grey")
     ax.set_aspect("equal")
 
-    # Plot obstacles, robot, and other elements as before...
-    # (Keep previous obstacle plotting code here)
+    # Plot obstacles and their expanded boundaries
+    for obstacle in obstacles_info:
+        # Original obstacle
+        ob_rect = patches.Rectangle(
+            (obstacle["x"], obstacle["y"]),
+            obstacle_footprint[0],
+            obstacle_footprint[1],
+            linewidth=1,
+            edgecolor="black",
+            facecolor="yellow",
+        )
+        ax.add_patch(ob_rect)
 
-    # Adapted Plotting for path_points as a list of numpy arrays
-    path_points = np.array(
-        valid_paths
-    )  # Convert list of numpy arrays to a 2D numpy array
-    x_coords, y_coords = (
-        path_points[:, 0],
-        path_points[:, 1],
-    )  # Unpack into x and y coordinates
+        # Expanded boundary
+        expanded_radius = (
+            expansion_distance + obstacle_footprint[0] / 2
+        )  # Assuming square obstacles for simplicity
+        circle = patches.Circle(
+            (obstacle["x"] + 0.5, obstacle["y"] + 0.5),
+            expanded_radius,
+            color="red",
+            fill=False,
+            linestyle="--",
+        )
+        ax.add_patch(circle)
+
+        # Arrow for direction, assuming 'd' key exists and corresponds to a direction
+        dx, dy = 0, 0
+        if "d" in obstacle and obstacle["d"] == Direction.NORTH:
+            dy = 0.5
+        elif "d" in obstacle and obstacle["d"] == Direction.SOUTH:
+            dy = -0.5
+        elif "d" in obstacle and obstacle["d"] == Direction.EAST:
+            dx = 0.5
+        elif "d" in obstacle and obstacle["d"] == Direction.WEST:
+            dx = -0.5
+        ax.arrow(
+            obstacle["x"] + 0.5,
+            obstacle["y"] + 0.5,
+            dx,
+            dy,
+            head_width=0.3,
+            head_length=0.3,
+            fc="black",
+            ec="black",
+        )
+
+    # Plot the path as a list of numpy arrays
+    path_points = np.array(valid_paths)  # Convert list to 2D numpy array
+    x_coords, y_coords = path_points[:, 0], path_points[:, 1]
 
     ax.plot(
         x_coords,
@@ -165,9 +210,41 @@ def visualize_paths(
         label="Path",
     )
 
-    # Continue with robot_info plotting and other visualization tasks...
-    # (Keep previous robot plotting code here)
+    # Coloring the robot's start zone and indicating the direction
+    if robot_info is not None:
+        start_zone = patches.Rectangle(
+            (robot_info["x"], robot_info["y"]),
+            robot_footprint[0],
+            robot_footprint[1],
+            linewidth=2,
+            edgecolor="r",
+            facecolor="orange",
+            label="Start Zone",
+        )
+        ax.add_patch(start_zone)
+
+        # Robot direction
+        dx, dy = 0, 0
+        if robot_info["d"] == Direction.NORTH:
+            dy = robot_footprint[1] / 2
+        elif robot_info["d"] == Direction.SOUTH:
+            dy = -robot_footprint[1] / 2
+        elif robot_info["d"] == Direction.EAST:
+            dx = robot_footprint[0] / 2
+        elif robot_info["d"] == Direction.WEST:
+            dx = -robot_footprint[0] / 2
+        ax.arrow(
+            robot_info["x"] + robot_footprint[0] / 2,
+            robot_info["y"] + robot_footprint[1] / 2,
+            dx,
+            dy,
+            head_width=0.5,
+            head_length=0.5,
+            fc="blue",
+            ec="blue",
+            length_includes_head=True,
+        )
 
     plt.legend()
-    plt.title("Path Visualization")
+    plt.title("Path and Obstacle Visualization")
     plt.show()
