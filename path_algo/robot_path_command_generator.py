@@ -168,26 +168,14 @@ def write_commands_to_file(dubins_paths, file_path):
     with open(file_path, "w") as file:
         for path in dubins_paths:
             commands = []
-            # Check for backward movement based on angle degree magnitude
-            is_backward = any(
-                abs(np.degrees(segment)) > 180
-                for index, segment in enumerate(path)
-                if index in [0, 1]
-            )
+
             segment_commands = []
             for i, segment in enumerate(path):
                 # Loop through each segment: 0 (first turn), 1 (second turn), 2 (straight)
                 if i < 2:  # Turn segments
                     angle_of_turn_degrees = np.degrees(segment)
-                    # Check if the turn is backward based on angle magnitude
-                    if is_backward and angle_of_turn_degrees >= 0:  # Backward Left Turn
-                        direction_of_turn = "BL"
-                    elif (
-                        is_backward and angle_of_turn_degrees < 0
-                    ):  # Backward Right Turn
-                        direction_of_turn = "BR"
-                    else:
-                        direction_of_turn = "FL" if angle_of_turn_degrees > 0 else "FR"
+
+                    direction_of_turn = "FL" if angle_of_turn_degrees > 0 else "FR"
 
                     segment_commands.append(
                         f"{direction_of_turn}:{abs(angle_of_turn_degrees):.2f}"
@@ -195,10 +183,6 @@ def write_commands_to_file(dubins_paths, file_path):
                 else:  # Straight segment
                     if segment > 0:  # Straight segment length
                         segment_commands.insert(1, f"S:{segment:.2f}")
-
-                # If backward movement is detected, reverse the command sequence for this segment
-            if is_backward:
-                segment_commands = segment_commands[::-1]
 
                 # Append the screenshot command for this segment
             segment_commands.append("SS")
