@@ -4,6 +4,7 @@ from algo.dubins import Dubins
 from consts import Direction
 from algo.a_star import MazeSolver
 from itertools import permutations
+from algo.path_visualization import visualize_paths
 
 
 def direction_to_theta(direction):
@@ -157,7 +158,7 @@ def find_shortest_path_through_all_nodes(graph, start):
                 f"Shortest path visiting all nodes: {' -> '.join(map(str, shortest_path['path']))}"
             )
             print(f"Total distance: {shortest_path['distance']} units")
-            return shortest_path["dubins_paths"]
+            return shortest_path
         else:
             print("No valid path found that visits all nodes.")
             return []
@@ -235,11 +236,14 @@ graph = calculate_all_edges(waypoints, obstacles_info, obstacle_expansion)
 
 # Find the shortest path through all nodes in the graph
 start_waypoint = waypoints[0]  # Assuming the first waypoint as the start
-dubins_paths = find_shortest_path_through_all_nodes(graph, start_waypoint)
+shortest_path = find_shortest_path_through_all_nodes(graph, start_waypoint)
 
-print("Dubins path: ", dubins_paths)
+print("Dubins path: ", shortest_path["dubins_paths"])
+print(shortest_path["path_points"])
+visualize_paths(shortest_path["path_points"], obstacles_info)
+
 # Write the commands for Dubins paths to a file
 commands_file_path = "dubins_commands.txt"
-write_commands_to_file(dubins_paths, commands_file_path)
+write_commands_to_file(shortest_path["dubins_paths"], commands_file_path)
 
 print(f"Commands for Dubins paths have been written to {commands_file_path}.")

@@ -110,6 +110,9 @@ ENV/
 env.bak/
 venv.bak/
 
+#command test
+.txt
+
 # Spyder project settings
 .spyderproject
 .spyproject
