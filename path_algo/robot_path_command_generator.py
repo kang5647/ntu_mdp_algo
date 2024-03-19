@@ -167,8 +167,6 @@ def find_shortest_path_through_all_nodes(graph, start):
 def write_commands_to_file(dubins_paths, file_path):
     with open(file_path, "w") as file:
         for path in dubins_paths:
-            commands = []
-
             segment_commands = []
             for i, segment in enumerate(path):
                 # Loop through each segment: 0 (first turn), 1 (second turn), 2 (straight)
@@ -186,12 +184,9 @@ def write_commands_to_file(dubins_paths, file_path):
 
                 # Append the screenshot command for this segment
             segment_commands.append("SS")
-
-            # Add the possibly reversed segment commands to the overall commands list
-            commands.extend(segment_commands)
-
-            # Write the formatted command string for this path, now correctly handling backward segments
-            command_str = ", ".join(commands)
+            print(segment_commands)
+            # Write the formatted command string for this path
+            command_str = ", ".join(segment_commands)
             file.write(f"[{command_str}]\n")
 
 
