@@ -1,5 +1,6 @@
 # ntu_mdp_algo
 Built a path-finding algorithm using A* search and Dubins, incorporating obstacles avoidance policy while searching the best path.
+
 ![image](https://github.com/kang5647/ntu_mdp_algo/assets/76279908/52ad27e2-c1fc-47af-b047-f405005d9924)
 
 To run:
