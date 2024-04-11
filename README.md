@@ -1,4 +1,6 @@
 # ntu_mdp_algo
+Build a path-finding algorithm using A* search and Dubins 
+
 To run:
 ````
 cd path_algo
